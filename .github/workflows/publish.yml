@@ -1,0 +1,44 @@
+name: Blogger 자동 발행
+
+on:
+  schedule:
+    - cron: '23 0 * * *'   # 매일 09:23 KST
+    - cron: '47 7 * * *'   # 매일 16:47 KST
+  workflow_dispatch:        # 수동 실행 버튼
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 랜덤 지연 (최대 90분)
+        if: github.event_name == 'schedule'
+        run: sleep $((RANDOM % 5400))
+
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 의존성 설치
+        run: pip install google-auth-oauthlib google-api-python-client
+
+      - name: Blogger 토큰 복원
+        run: echo '${{ secrets.BLOGGER_TOKEN }}' > blogger_token.json
+
+      - name: 다음 글 발행
+        run: python publish_next.py
+
+      - name: 변경 파일 커밋 & 푸시
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pending_drafts.json uploaded_posts.json publish_log.txt
+          git diff --staged --quiet || git commit -m "auto-publish: $(date '+%Y-%m-%d')"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sssorahan/blog_posts_cardmasterc.git main
