@@ -52,7 +52,7 @@ def main():
     draft_posts = []
     page_token = None
     while True:
-        kwargs = dict(blogId=blog_id, status='draft', maxResults=50)
+        kwargs = dict(blogId=blog_id, status='DRAFT', maxResults=50)
         if page_token:
             kwargs['pageToken'] = page_token
         resp = service.posts().list(**kwargs).execute()
