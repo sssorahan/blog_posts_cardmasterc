@@ -41,4 +41,5 @@ jobs:
           git config user.email "actions@github.com"
           git add pending_drafts.json uploaded_posts.json publish_log.txt
           git diff --staged --quiet || git commit -m "auto-publish: $(date '+%Y-%m-%d')"
+          git pull --rebase https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sssorahan/blog_posts_cardmasterc.git main
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sssorahan/blog_posts_cardmasterc.git main
