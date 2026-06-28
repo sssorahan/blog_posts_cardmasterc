@@ -97,6 +97,8 @@ def upload_and_publish_html(service, blog_id, pending, uploaded):
     html_files = sorted(BASE_DIR.glob('post_*.html'))
     new_files  = [f for f in html_files if f.name not in uploaded]
 
+    log(f"[디버그] HTML 파일: {len(html_files)}개 / 미발행: {len(new_files)}개 / uploaded 키: {len(uploaded)}개")
+
     if not new_files:
         log("[완료] 모든 포스트 발행 완료. 더 이상 발행할 글이 없습니다.")
         sys.exit(0)
