@@ -110,17 +110,12 @@ def upload_and_publish_html(service, blog_id, pending, uploaded):
 
     log(f"신규 업로드+발행: {title} ({target.name})")
 
-    # 초안으로 생성
-    draft = service.posts().insert(
+    # 직접 발행 (draft → publish 2단계 대신 insert 1단계)
+    result   = service.posts().insert(
         blogId=blog_id,
-        body={'title': title, 'content': body},
-        isDraft=True
+        body={'title': title, 'content': body}
     ).execute()
-    post_id = draft['id']
-    log(f"  초안 생성됨 (post_id: {post_id})")
-
-    # 즉시 발행
-    result   = service.posts().publish(blogId=blog_id, postId=post_id).execute()
+    post_id  = result['id']
     status   = result.get('status', '?')
     post_url = result.get('url', '')
 
